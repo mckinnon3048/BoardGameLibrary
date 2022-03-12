@@ -1,5 +1,7 @@
+from collections import defaultdict
 import sqlite3 as sql
 from sqlite3 import Error
+import sqlite3
 
 
 def create_connection(db_file):
@@ -71,10 +73,63 @@ def commit_db(conn):
     conn.close()
 
 def add_games_to_library(conn):
-    print('game in library')
+    cursor = conn.cursor()
+    
+    acceptable_entry = False
+    while not acceptable_entry:
+        game_name = input("What is the name of the game: ")
+        acceptable_entry = bool(game_name)
+        if acceptable_entry == False:
+            print('Invalid entry, name may not be blank!')
+
+    acceptable_entry= False
+    while not acceptable_entry:
+        game_min_players = input("What is the minimum player count: ")
+        acceptable_entry = game_min_players.isnumeric and len(game_min_players) >= 1
+        if acceptable_entry == False:
+            print('Invalid entry, min players must be numeric values only!')
+   
+    acceptable_entry = False
+    while not acceptable_entry:
+        game_max_players = input("What is the maximum player count: ")
+        acceptable_entry = game_max_players.isnumeric and len(game_max_players) >= 1
+        if acceptable_entry == False:
+            print('Invalid entry, max players must be numeric values only!')
+    
+    acceptable_entry = False
+    while not acceptable_entry:
+        game_play_durration = input("Normal play time in minutes: ")
+        acceptable_entry = game_play_durration.isnumeric and len(game_play_durration) >= 1
+        if acceptable_entry == False:
+            print('Invalid entry, time must be numeric values only!')
+            
+    cursor.execute('''
+        INSERT INTO game_library(title, min_player, max_player, play_time)
+        VALUES(?,?,?,?)
+    ''', (game_name, game_min_players, game_max_players, game_play_durration))
 
 def add_players(conn):
-    pass
+    cursor = conn.cursor()
+
+    acceptable_entry = False
+    while not acceptable_entry:
+        first_name = input("What is the players first name: ")
+        acceptable_entry = bool(first_name)
+        if acceptable_entry == False:
+            print('Invalid entry, first name may not be blank!')
+
+    acceptable_entry = False
+    while not acceptable_entry:
+        last_name = input("What is the players first name: ")
+        acceptable_entry = bool(last_name)
+        if acceptable_entry == False:
+            print('Invalid entry, last name may not be blank!')
+
+    cursor.execute('''
+        INSERT INTO players(first_name, last_name)
+        VALUES(?,?)
+    ''', (first_name, last_name))
+
 
 def add_games_played(conn):
     pass
@@ -103,6 +158,8 @@ def main_menu(conn):
         case '3':
             add_games_played(conn)
             return(True)
+        case '4':
+            display_games_library(conn)
         case '9':
             rollback_db(conn)
             return(False)
@@ -118,7 +175,8 @@ def main():
     database = r"BoardGameLibrary.db"
 
     #create connection to DB
-    conn = create_connection(database)
+    #conn = create_connection(database)
+    conn = sqlite3.connect(database)
 
     #create tables if needed
     create_tables(conn)
