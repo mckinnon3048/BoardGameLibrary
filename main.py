@@ -62,9 +62,16 @@ def create_tables(conn):
         print("Database, unable to connect")
         conn.close()
 
+def rollback_db(conn):
+    conn.rollback()
+    conn.close()
+
+def commit_db(conn):
+    conn.commit()
+    conn.close()
 
 def add_games_to_library(conn):
-    pass
+    print('game in library')
 
 def add_players(conn):
     pass
@@ -80,12 +87,32 @@ def main_menu(conn):
     1 : Add games to library
     2 : Add players
     3 : Add games played
-    9 : Rollback
-    0 : Exit
+    9 : Rollback & Exit
+    0 : Save & Exit
     '''
     )
     selection = input("Select from the options above... ")
 
+    match selection:
+        case '1':
+            add_games_to_library(conn)
+            return(True)
+        case '2':
+            add_players(conn)
+            return(True)
+        case '3':
+            add_games_played(conn)
+            return(True)
+        case '9':
+            rollback_db(conn)
+            return(False)
+        case '0':
+            commit_db(conn)
+            return(False)
+    print('Invalid selection')
+    return(True)
+    
+            
 
 def main():
     database = r"BoardGameLibrary.db"
@@ -97,10 +124,14 @@ def main():
     create_tables(conn)
 
     #launch main menu
-    print ("menu placeholder")
+    menu_active = True
+    while menu_active:
+        menu_active = main_menu(conn)
 
-    conn.commit()
-    conn.close()
+    #conn.commit()
+   # print('commit done')
+    #conn.close()
+   # print('connection closed')
 
 
 
