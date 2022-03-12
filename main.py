@@ -21,9 +21,7 @@ def create_table(conn, create_table_sql):
         print(e)
 
 
-def main():
-    database = r"BoardGameLibrary.db"
-
+def create_tables(conn):
     sql_create_table_game_library = """ 
     CREATE TABLE IF NOT EXISTS game_library  (
         id INTEGER PRIMARY KEY,
@@ -50,10 +48,7 @@ def main():
         FOREIGN KEY (game_played) REFERENCES game_library(id)    
     ); """
 
-    #create connection to DB
-    conn = create_connection(database)
-
-    #create tables
+    #create tables if tables do not exist
     if conn is not None:
         # make games_library table
         create_table(conn, sql_create_table_game_library)
@@ -63,10 +58,50 @@ def main():
 
         #make games_played table
         create_table(conn, sql_create_table_games_played)
-        conn.close()
     else:
         print("Database, unable to connect")
         conn.close()
+
+
+def add_games_to_library(conn):
+    pass
+
+def add_players(conn):
+    pass
+
+def add_games_played(conn):
+    pass
+
+def main_menu(conn):
+    
+    #present menu to user & accept selection
+    print(
+    ''' 
+    1 : Add games to library
+    2 : Add players
+    3 : Add games played
+    9 : Rollback
+    0 : Exit
+    '''
+    )
+    selection = input("Select from the options above... ")
+
+
+def main():
+    database = r"BoardGameLibrary.db"
+
+    #create connection to DB
+    conn = create_connection(database)
+
+    #create tables if needed
+    create_tables(conn)
+
+    #launch main menu
+    print ("menu placeholder")
+
+    conn.commit()
+    conn.close()
+
 
 
 if __name__ == '__main__':
